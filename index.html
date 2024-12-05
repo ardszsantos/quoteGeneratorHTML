@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jolhambão Quote Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 min-h-screen flex items-center justify-center text-gray-300">
+    <div class="p-8 bg-gray-800 rounded-lg shadow-lg transition-transform duration-500 hover:scale-105 w-full max-w-lg">
+        <h1 class="text-3xl font-bold text-emerald-400 mb-4 text-center">
+            Jolhambão Quote Generator
+        </h1>
+        <p id="quote" class="text-lg italic text-center mb-4 opacity-90">
+            "Click the button to get a quote!"
+        </p>
+        <p id="author" class="text-sm text-right text-gray-500 mb-4">
+            - Unknown
+        </p>
+        <button id="new-quote" 
+            class="mt-4 px-4 py-2 w-full bg-emerald-500 text-gray-900 font-semibold rounded-lg transition-all duration-300 hover:bg-emerald-600 hover:text-white focus:ring-2 focus:ring-emerald-400 focus:outline-none">
+            Get Quote
+        </button>
+        <p id="error" class="text-red-500 text-center mt-4 hidden">
+            Failed to fetch the quote. Try again later!
+        </p>
+    </div>
+
+    <script>
+        const quoteElement = document.getElementById("quote");
+        const authorElement = document.getElementById("author");
+        const errorElement = document.getElementById("error");
+        const button = document.getElementById("new-quote");
+
+        button.addEventListener("click", async () => {
+            try {
+                errorElement.classList.add("hidden");
+                button.textContent = "Loading..."; // Indica carregamento
+                const response = await fetch("http://localhost:8080/quote");
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch");
+                }
+
+                const data = await response.json();
+
+                // Atualiza a frase e o autor no frontend
+                quoteElement.innerText = `"${data.data.text}"`;
+                authorElement.innerText = `- ${data.data.author}`;
+                button.textContent = "Get Another Quote"; // Restaura o texto do botão
+            } catch (error) {
+                console.error(error);
+                errorElement.classList.remove("hidden");
+                button.textContent = "Try Again"; // Mostra erro no botão
+            }
+        });
+    </script>
+</body>
+</html>
